@@ -41,6 +41,9 @@ public:
 
     void r_division(pair<int, int> coord, pair<int, int> hw, bool orientation)
     {
+        display();
+        Sleep(0.02);
+
         if (hw.first < 2 || hw.second < 2)
             return;
         srand(time(0));
@@ -84,10 +87,10 @@ public:
 
     void display()
     {
-        vector<vector<char> > v(rows, vector<char>(columns));
-        for (int i = 0; i < rows; i++)
+        vector<vector<char> > v(rows * 2 + 1, vector<char>(columns * 2 + 1));
+        for (int i = 0; i < rows * 2 + 1; i++)
         {
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < columns * 2 + 1; j++)
             {
                 v[i][j] = ' ';
             }
@@ -98,35 +101,48 @@ public:
             {
                 for (auto jt = maze.equal_range(it->first).first; jt != maze.equal_range(it->first).second; ++jt)
                 {
-                    if (it->second == 1)
-                        v[it->first.first][it->first.second] = '|';
+                    if (it->second == 0)
+                    {
+                        v[it->first.first * 2][it->first.second * 2 + 1] = '#';
+                        if (it->first.first != 0)
+                            v[it->first.first * 2 - 1][it->first.second * 2 + 1] = '#';
+                    }
                     else
-                        v[it->first.first][it->first.second] = '_';
+                    {
+                        v[it->first.first * 2 + 1][it->first.second * 2] = '#';
+                        if (it->first.second != 0)
+                            v[it->first.first * 2 + 1][it->first.second * 2 - 1] = '#';
+                    }
+                    v[it->first.first * 2 + 1][it->first.second * 2 + 1] = '#';
                 }
             }
             else
             {
-                if (it->second == 1)
-                    v[it->first.first][it->first.second] = '|';
+                if (it->second == 0)
+                {
+                    v[it->first.first * 2][it->first.second * 2 + 1] = '#';
+                    if (it->first.first != 0)
+                        v[it->first.first * 2 - 1][it->first.second * 2 + 1] = '#';
+                }
                 else
-                    v[it->first.first][it->first.second] = '_';
+                {
+                    v[it->first.first * 2 + 1][it->first.second * 2] = '#';
+                    if (it->first.second != 0)
+                        v[it->first.first * 2 + 1][it->first.second * 2 - 1] = '#';
+                }
+                v[it->first.first * 2 + 1][it->first.second * 2 + 1] = '#';
             }
         }
-        for (int j = 0; j <= columns; j++)
-            cout << '_';
         cout << '\n';
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < rows * 2 - 2; i++)
         {
-            cout << '|';
-            for (int j = 0; j < columns; j++)
+            cout << '#';
+            for (int j = 0; j < columns * 2 - 2; j++)
             {
                 cout << v[i][j];
             }
-            cout << "| \n";
+            cout << "# \n";
         }
-        for (int j = 0; j <= columns; j++)
-            cout << '_';
-        cout << '\n';
     }
 };
 
@@ -136,4 +152,6 @@ int main()
     maze.r_division(make_pair(0, 0), make_pair(15, 15), maze.choose_orientation(15, 15));
     cout << "\n\n\n ------------ \n\n\n";
     maze.display();
+    int k;
+    cin >> k;
 }
