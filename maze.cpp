@@ -41,9 +41,6 @@ public:
 
     void r_division(pair<int, int> coord, pair<int, int> hw, bool orientation)
     {
-        display();
-        Sleep(0.02);
-
         if (hw.first < 2 || hw.second < 2)
             return;
         srand(time(0));
@@ -97,26 +94,7 @@ public:
         }
         for (multimap<pair<int, int>, int>::iterator it = maze.begin(); it != maze.end(); ++it)
         {
-            if (maze.count(it->first) > 1)
-            {
-                for (auto jt = maze.equal_range(it->first).first; jt != maze.equal_range(it->first).second; ++jt)
-                {
-                    if (it->second == 0)
-                    {
-                        v[it->first.first * 2][it->first.second * 2 + 1] = '#';
-                        if (it->first.first != 0)
-                            v[it->first.first * 2 - 1][it->first.second * 2 + 1] = '#';
-                    }
-                    else
-                    {
-                        v[it->first.first * 2 + 1][it->first.second * 2] = '#';
-                        if (it->first.second != 0)
-                            v[it->first.first * 2 + 1][it->first.second * 2 - 1] = '#';
-                    }
-                    v[it->first.first * 2 + 1][it->first.second * 2 + 1] = '#';
-                }
-            }
-            else
+            for (auto jt = maze.equal_range(it->first).first; jt != maze.equal_range(it->first).second; ++jt)
             {
                 if (it->second == 0)
                 {
