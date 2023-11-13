@@ -1,31 +1,36 @@
-﻿using namespace std;
+using namespace std;
 
 #include <iostream>
 #include <map>
+#include <set>
 #include <iterator>
 #include <random>
 #include <utility>
 #include <windows.h>
 
-class Maze : public multimap<pair<int, int>, int>
+class Maze : public map < pair<int, int>, set<pair<int, int> > >
 {
 protected:
-    multimap<pair<int, int>, int> maze;
+    map < pair<int, int>, set<pair<int, int> > > maze;
+    map < tuple<int, int, int>, set<tuple<int, int, int> > > maze_3d;
     int rows;
     int columns;
+    int levels;
 public:
-    Maze(int r = 0, int c = 0): multimap()
+    Maze(int r = 0, int c = 0) : map()
     {
         rows = r;
         columns = c;
     }
-    Maze(const Maze& m) : multimap(maze)
+    Maze(const Maze& m) : map(maze)
     {
         rows = m.rows;
         columns = m.columns;
     }
     ~Maze()
     {
+        for (map < pair<int, int>, set<pair<int, int> > >::iterator it = maze.begin(); it != maze.end(); ++it)
+            it->second.clear();
         maze.clear();
     }
 
@@ -39,6 +44,7 @@ public:
         return width < height;
     }
 
+    //генератор лабиринта 2d
     void r_division(pair<int, int> coord, pair<int, int> hw, bool orientation)
     {
         if (hw.first < 2 || hw.second < 2)
@@ -52,21 +58,21 @@ public:
         {
             if (wall.first != passage.first || wall.second != passage.second)
             {
-                if (maze.size() != 0)
+                map < pair<int, int>, set<pair<int, int> > >::iterator it = maze.find(wall);
+                if (it != maze.end())
                 {
-                    multimap< pair<int, int>, int>::iterator it = maze.find(wall);
-                    if (it != maze.end())
+                    if (orientation)
                     {
-                        it->second = int(it->second | !(orientation));
+                        it->second.insert(make_pair(wall.first, wall.second + 1));
                     }
                     else
                     {
-                        maze.insert(make_pair(wall, !(orientation)));
+                        it->second.insert(make_pair(wall.first + 1, wall.second));
                     }
                 }
-                else if (maze.size() == 0)
+                else
                 {
-                    maze.insert(make_pair(wall, !(orientation)));
+                    maze[wall] = { make_pair(wall.first + 1, wall.second) };
                 }
             }
             wall = make_pair(wall.first | direction.first, wall.second | direction.second);
@@ -82,6 +88,15 @@ public:
         r_division(n, make_pair(width, height), choose_orientation(width, height));
     }
 
+    void generate_3d()
+    {
+        for (int i = 0; i < levels; i++)
+        {
+            //
+        }
+    }
+
+    //вывод лабиринта
     void display()
     {
         vector<vector<char> > v(rows * 2 + 1, vector<char>(columns * 2 + 1));
@@ -92,21 +107,21 @@ public:
                 v[i][j] = ' ';
             }
         }
-        for (multimap<pair<int, int>, int>::iterator it = maze.begin(); it != maze.end(); ++it)
+        for (map < pair<int, int>, set<pair<int, int> > >::iterator it = maze.begin(); it != maze.end(); ++it)
         {
-            for (auto jt = maze.equal_range(it->first).first; jt != maze.equal_range(it->first).second; ++jt)
+            for (set<pair<int, int> >::iterator jt = it->second.begin(); jt != it->second.end(); ++jt)
             {
-                if (it->second == 0)
-                {
-                    v[it->first.first * 2][it->first.second * 2 + 1] = '#';
-                    if (it->first.first != 0)
-                        v[it->first.first * 2 - 1][it->first.second * 2 + 1] = '#';
-                }
-                else
+                if (it->first.first + 1 == jt->first)
                 {
                     v[it->first.first * 2 + 1][it->first.second * 2] = '#';
                     if (it->first.second != 0)
                         v[it->first.first * 2 + 1][it->first.second * 2 - 1] = '#';
+                }
+                else if (it->first.second + 1 == jt->second)
+                {
+                    v[it->first.first * 2][it->first.second * 2 + 1] = '#';
+                    if (it->first.first != 0)
+                        v[it->first.first * 2 - 1][it->first.second * 2 + 1] = '#';
                 }
                 v[it->first.first * 2 + 1][it->first.second * 2 + 1] = '#';
             }
@@ -121,6 +136,21 @@ public:
             }
             cout << "# \n";
         }
+    }
+
+    void input_table()
+    {
+        //
+    }
+
+    void input_coords()
+    {
+        //
+    }
+
+    void a_star()
+    {
+        //
     }
 };
 
