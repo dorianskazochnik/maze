@@ -1,0 +1,147 @@
+using namespace std;
+
+#include <iostream>
+#include <iterator>
+#include <random>
+#include <utility>
+#include <queue>
+#include <vector>
+#include <stack>
+#include <windows.h>
+
+class Maze : public priority_queue<pair<pair<int, int>, pair<int, int> >, vector<pair<pair<int, int>, pair<int, int> > >, greater<pair<pair<int, int>, pair<int, int> > > >
+{
+protected:
+    priority_queue<pair<pair<int, int>, pair<int, int> >, vector<pair<pair<int, int>, pair<int, int> > >, greater<pair<pair<int, int>, pair<int, int> > > > maze;
+    pair<int, int> entry;
+    pair<int, int> exit;
+    int rows;
+    int columns;
+    int levels;
+public:
+    Maze(int r = 0, int c = 0, int l = 0) : priority_queue()
+    {
+        rows = r;
+        columns = c;
+        levels = l;
+    }
+    Maze(const Maze& m) : priority_queue(maze)
+    {
+        rows = m.rows;
+        columns = m.columns;
+        levels = m.levels;
+    }
+    ~Maze()
+    {
+        for (int i = 0; i < rows; i++)
+            maze.pop();
+    }
+
+    bool choose_orientation(int width, int height)
+    {
+        if (width == height)
+        {
+            srand(time(0));
+            return rand() % (2) == 0;
+        }
+        return width < height;
+    }
+
+    void generate()
+    {
+        //создание и заполнение сетки
+        vector<vector<char> > v(rows * 2 + 1, vector<char>(columns * 2 + 1));
+        for (int i = 0; i < rows * 2 + 1; i++)
+        {
+            for (int j = 0; j < columns  * 2 + 1; j++)
+            {
+                v[i][j] = ' ';
+            }
+        }
+        //генерация внутренних стен
+        r_division(v, make_pair(0, 0), make_pair(rows, columns), choose_orientation(rows, columns));
+        srand(time(0));
+        //генерация входа и выхода
+        entry = make_pair(1 + rand() % (rows * 2), 1 + rand() % (columns * 2));
+        exit = make_pair((1 + rand() % (columns * 2)) % (rows * 2), (1 + rand() % (rows * 2)) % (columns * 2));
+        for (int i = 0; i < rows * 2 + 1; i++)
+        {
+            if (i == 0 || i == rows * 2)
+                for (int j = 0; j < columns * 2 + 1; j++)
+                    v[i][j] = '#';
+            else
+            {
+                v[i][0] = '#';
+                v[i][columns * 2] = '#';
+            }
+        }
+        v[entry.first][entry.second] = 'x';
+        v[exit.first][exit.second] = '!';
+        //вывод
+        display(v);
+    }
+
+    //генератор уровня лабиринта в виде двумерного поля (вектора)
+    void r_division(vector<vector<char> >& v, pair<int, int> coord, pair<int, int> hw, bool orientation)
+    {
+        if (hw.first < 2 || hw.second < 2)
+            return;
+        srand(time(0));
+        pair<int, int> wall(coord.first + (orientation ? 0 : 1 + rand() % (hw.first - 1)), coord.second + (orientation ? 1 + rand() % (hw.second - 1) : 0));
+        pair<int, int> passage(coord.first + (orientation ? 1 + rand() % (hw.first) : 0), coord.second + (orientation ? 0 : 1 + rand() % (hw.second)));
+        pair<int, int> direction(orientation ? 1 : 0, orientation ? 0 : 1);
+        int length = orientation ? hw.first : hw.second;
+        for (int i = 0; i < length; i++)
+        {
+            if (wall.first != passage.first || wall.second != passage.second)
+            {
+                if (orientation)
+                {
+                    v[wall.first * 2][wall.second * 2 + 1] = '#';
+                    if (wall.first != 0)
+                        v[wall.first * 2 - 1][wall.second * 2 + 1] = '#';
+                }
+                else
+                {
+                    v[wall.first * 2 + 1][wall.second * 2] = '#';
+                    if (wall.second != 0)
+                        v[wall.first * 2 + 1][wall.second * 2 - 1] = '#';
+                }
+                v[wall.first * 2 + 1][wall.second * 2 + 1] = '#';
+            }
+            wall = make_pair(wall.first | direction.first, wall.second | direction.second);
+        }
+        pair<int, int> n = coord;
+        int width = orientation ? hw.first : wall.first - n.first;
+        int height = orientation ? wall.second - n.second : hw.second;
+        r_division(v, n, make_pair(width, height), choose_orientation(width, height));
+
+        n = make_pair(orientation ? coord.first : wall.first, orientation ? wall.second : coord.second);
+        width = orientation ? hw.first : coord.first + hw.first - wall.first;
+        height = orientation ? coord.second + hw.second - wall.second : hw.second;
+        r_division(v, n, make_pair(width, height), choose_orientation(width, height));
+    }
+
+    //вывод лабиринта 2d
+    void display(const vector<vector<char> >& v)
+    {
+        for (int i = 0; i < rows * 2 + 1; i++)
+        {
+            for (int j = 0; j < columns * 2 + 1; j++)
+            {
+                cout << v[i][j];
+            }
+            cout << '\n';
+        }
+    }
+};
+
+int main()
+{
+    Maze maze(15, 15);
+    maze.generate();
+    cout << "\n\n\n ------------ \n\n\n";
+    //maze.Dijkstra();
+    int k;
+    cin >> k;
+}
