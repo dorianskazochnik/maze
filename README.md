@@ -2,11 +2,21 @@
 
 ## about
 
-Maze.cpp is a program that generates a pseudo-random labirinth (maze) and solves it in two different ways. In version maze_1.0 it does just that, but in it is planned to make the maze three-dimensional (add different levels) and to make it more easy to navigate changes in position.
+Maze.cpp is a program that generates a pseudo-random labirinth (maze) and solves it in two different ways.
 
 ## updates
 
-The program will be finished in a month and updated every week or more frequently.
+### maze_2.0
+made the maze 3d with two solving algorithms (bfs and dfs);
+21.11.2023
+
+made changes in main function to implement better interface;
+27.11.2023
+
+finished this program with adding some optimisation
+05.12.2023
+
+## Program is finished, you can use it from maze_3.0_finished.cpp
 
 ## use of my code
 
