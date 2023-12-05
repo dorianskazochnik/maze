@@ -13,7 +13,10 @@ made the maze 3d with two solving algorithms (bfs and dfs);
 made changes in main function to implement better interface;
 27.11.2023
 
-The program will be finished in a month and updated every week or more frequently.
+finished this program with adding some optimisation
+05.12.2023
+
+## Program is finished, you can use it from maze.cpp
 
 ## use of my code
 
